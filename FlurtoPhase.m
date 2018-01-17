@@ -2,23 +2,24 @@
 %   2018-01-11
 
 %% specify all the paths and initialize schnitzcells
-exp_date = '2018-01-11'
+exp_date = '2018-01-17'
+schn_path = 'D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\';
 p = initschnitz('TestSchnitz-01',exp_date,'e.coli',...
-'rootDir','D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples');
-source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 1211 plasmid different copy number\871+963 induced 3hours 2000ms\';
-save_dir = ['D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\' exp_date '\TestSchnitz-01\images\'];
+'rootDir',schn_path);
+source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180118\878 RFP2000ms GFP 10ms\';
+save_dir = [schn_path exp_date '\TestSchnitz-01\images\'];
 
-filename{1} = 'MultichannelF-t1.tif';
-filename{2} = 'MultichannelF-t2.tif';
-filename{3} = 'MultichannelF3.tif';
-filename{4} = 'MultichannelF4.tif';
-filename{5} = 'MultichannelF5.tif';
-filename{6} = 'MultichannelF.tif';
+filename{1} = 'Multichannel-0103.tif';
+filename{2} = 'Multichannel-0403.tif';
+filename{3} = 'Multichannel-0503.tif';
+filename{4} = 'Multichannel-0603.tif';
+filename{5} = 'Multichannel-0803.tif';
+filename{6} = 'Multichannel-0003.tif';
 
 %% process all the images for cell segmentation
 
 
-for i = 1:1
+for i = 1:6
     imgr = imread([source_dir filename{i}]);
     %2100 is a good threshold
     %p2(p2>2100)  = 2100;
@@ -37,22 +38,28 @@ for i = 1:1
     % cells afterwards.
     % TwoStage seems to be better than the default method. Sensitivity can
     % be set to 1
-    image(pm/100)
-    [centersBright, radiiBright] = imfindcircles(pm,[1 4],'ObjectPolarity','bright','Sensitivity',1,'Method','TwoStage');
-    viscircles(centersBright, radiiBright,'Color','b');
+    %image(pm/100)
+    %[centersBright, radiiBright] = imfindcircles(pm,[1 4],'ObjectPolarity','bright','Sensitivity',1,'Method','TwoStage');
+    %viscircles(centersBright, radiiBright,'Color','b');
     
     % prefix -01-t- indicates that we used these files for segmentation
     % based on fluorescence images
-    write_name = ['D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\'...
+    write_name = [schn_path...
          exp_date '\TestSchnitz-01\images\TestSchnitz-01-t-' num2str(i,'%03d') '.tif'];
-    imwrite(uint16(imgr)-uint16(spots)*1000,write_name);
-    write_name = ['D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\'...
-         exp_date '\TestSchnitz-01\images\TestSchnitz-01-spots-t-' num2str(i,'%03d') '.tif'];
-    imwrite(uint16(spots),write_name);
+    imwrite(imgr,write_name);
+    %write_name = ['D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\'...
+    %     exp_date '\TestSchnitz-01\images\TestSchnitz-01-spots-t-' num2str(i,'%03d') '.tif'];
+    %imwrite(uint16(spots),write_name);
 end
 
-%p = segmoviefluor(p);
+p = segmoviefluor(p,'maxThresh',0.1);
+p = manualcheckseg(p);
 
+%load masks
+for i = 1:6
+    seg_path = load([schn_path exp_date '\TestSchnitz-01\segmentation\TestSchnitz-01seg' num2str(i,'%03d') '.mat'],'Lc');
+    mask{i} = seg_path.Lc;
+end
 %% remove background from samples and identify spots (old method)
 %   pm: gray-scale image
 %   mthres: threshold to identify cells, thres1 in the first round and thres2 in
