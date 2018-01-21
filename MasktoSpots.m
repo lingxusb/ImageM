@@ -2,7 +2,7 @@ function [ spots, gfp ] = MasktoSpots( mask,filename, schn_path, exp_date)
 %MASKTOSPOTS generate the statistic of spots in a mask
 %   2018-01-17
 
-%read the fluorescence file
+%read the fluorescence file 
 imgr = imread([filename num2str(2,'%02d') '.tif']);
 s = size(imgr);
 
