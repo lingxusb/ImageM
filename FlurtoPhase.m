@@ -2,19 +2,19 @@
 %   2018-01-11
 
 %% specify all the paths and initialize schnitzcells
-exp_date = '2018-01-17'
+exp_date = '2018-01-30'
 schn_path = 'D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\';
 p = initschnitz('TestSchnitz-01',exp_date,'e.coli',...
 'rootDir',schn_path);
-source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180118\878 RFP2000ms GFP 10ms\';
+source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180128 963+XGFP and pA1+X\977new +963 rfp 2000ms gfp 300ms\';
 save_dir = [schn_path exp_date '\TestSchnitz-01\images\'];
 
-filename{1} = 'Multichannel-0103.tif';
-filename{2} = 'Multichannel-0403.tif';
-filename{3} = 'Multichannel-0503.tif';
-filename{4} = 'Multichannel-0603.tif';
-filename{5} = 'Multichannel-0803.tif';
-filename{6} = 'Multichannel-0003.tif';
+filename{1} = 'Multichannel-0003.tif';
+filename{2} = 'Multichannel-0103.tif';
+filename{3} = 'Multichannel-0203.tif';
+filename{4} = 'Multichannel-1103.tif';
+filename{5} = 'Multichannel-1103.tif';
+filename{6} = 'Multichannel-1103.tif';
 
 %% process all the images for cell segmentation
 
@@ -60,6 +60,7 @@ for i = 1:6
     seg_path = load([schn_path exp_date '\TestSchnitz-01\segmentation\TestSchnitz-01seg' num2str(i,'%03d') '.mat'],'Lc');
     mask{i} = seg_path.Lc;
 end
+
 %% remove background from samples and identify spots (old method)
 %   pm: gray-scale image
 %   mthres: threshold to identify cells, thres1 in the first round and thres2 in
