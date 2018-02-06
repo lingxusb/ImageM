@@ -1,4 +1,4 @@
-function [ spots, gfp ] = MasktoSpots( mask,filename, schn_path, exp_date, index)
+function [ spots,rfp, gfp ] = MasktoSpots( mask,filename, schn_path, exp_date, index)
 %MASKTOSPOTS generate the statistic of spots in a mask
 %   2018-01-17
 
@@ -37,8 +37,9 @@ for i = 1:max2(mask{index})
 end
 
 %get spots intensity
-spots =  zeros(max2(mask{index}),1);
+rfp =  zeros(max2(mask{index}),1);
 img_spots = zeros(size(imgr));
+spots = [];
 for i = 1:max2(mask{index})
     cella = zeros(size(imgr));
     maski = delout(find(mask{index}==i)+drift, s(1)*s(2));
@@ -50,7 +51,8 @@ for i = 1:max2(mask{index})
         larea(j) = stats(j).Area;
         if larea(j)<150 && larea(j) >10 && max(max(cella(CC.PixelIdxList{j})))> 300 ...
                     && stats(j).Area/max(stats(j).BoundingBox(3:4))^2>0.4
-                spots(i) = spots(i) + sum(sum(cella(CC.PixelIdxList{j})));
+                spots = [spots, sum(sum(cella(CC.PixelIdxList{j})))];
+                rfp(i) = rfp(i) + sum(sum(cella(CC.PixelIdxList{j})));
                 img_spots(CC.PixelIdxList{j}) = cella(CC.PixelIdxList{j});
         end
     end
