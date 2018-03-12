@@ -8,6 +8,7 @@ function [m2,intensity ] = ImageProc( filename, thres,sample, frame, fishnum)
 %   the next question is how to subtract background without affect the spot
 %   intensity.
 
+
 %   image processing is divided into two steps, in the first step,
 %   background fluorescence is subtracted from each cell. In the second
 %   step, the spot instensity is collected
