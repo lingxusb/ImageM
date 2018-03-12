@@ -1,4 +1,4 @@
-function [ spots,rfp, gfp ] = MasktoSpots( mask,filename, schn_path, exp_date, index)
+function [ spots,rfp, gfp, background, intensity, mintensity ] = MasktoSpots( mask,filename, schn_path, exp_date, index)
 %MASKTOSPOTS generate the statistic of spots in a mask
 %   2018-01-17
 
@@ -22,10 +22,13 @@ minten = max(inten(:));
 drift = (rindex-8)*s(1)+cindex-8;
 
 %% remove background
+background = zeros(max2(mask{index}),1);
 for i = 1:max2(mask{index})
     maski = delout(find(mask{index}==i)+drift, s(1)*s(2));
-    background = prctile(imgr(maski),60);
-    imgr(maski) = imgr(maski)-background;
+    background(i) = prctile(imgr(maski),60);
+    intensity(i) = sum(sum(imgr(maski)));
+    mintensity(i) = sum(sum(imgr(maski)))/sum(sum(mask{index}==i));
+    imgr(maski) = imgr(maski)-background(i);
 end
 
 %% calculate statistics

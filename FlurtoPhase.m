@@ -2,19 +2,19 @@
 %   2018-01-11
 
 %% specify all the paths and initialize schnitzcells
-exp_date = '2018-02-19'
+exp_date = '2018-03-04'
 schn_path = 'D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\';
 p = initschnitz('TestSchnitz-01',exp_date,'e.coli',...
 'rootDir',schn_path);
-source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180220\878+963n r 2000ms g 10ms 2000iptg\';
+source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180308\A4+879 rfp 1000ms gfp 10ms\';
 save_dir = [schn_path exp_date '\TestSchnitz-01\images\'];
 
-filename{1} = 'Multichannel-0203.tif';
-filename{2} = 'Multichannel-0303.tif';
-filename{3} = 'Multichannel-0403.tif';
-filename{4} = 'Multichannel-0503.tif';
-filename{5} = 'Multichannel-0603.tif';
-filename{6} = 'Multichannel-0703.tif';
+filename{1} = 'Multichannel-0003.tif';
+filename{2} = 'Multichannel-0103.tif';
+filename{3} = 'Multichannel-0203.tif';
+filename{4} = 'Multichannel-0403.tif';
+filename{5} = 'Multichannel-0503.tif';
+filename{6} = 'Multichannel-0503.tif';
 
 
 %% process all the images for cell segmentation
