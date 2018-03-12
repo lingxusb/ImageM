@@ -1,6 +1,6 @@
 function [m2,intensity ] = ImageProc( filename, thres,sample, frame, fishnum)
 %IMAGEPROC default program to process fluorescence imagess
-%   sample is index for samples
+%   sample is index for samples  
 %   frame is the index for image of each sample
 %   fishnum is the number of the image
 %   thres is the threshold model to get cell masks
