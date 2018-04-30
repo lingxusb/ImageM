@@ -1,10 +1,19 @@
 function [ spots,rfp, gfp, background, intensity, mintensity ] = MasktoSpots( mask,filename, schn_path, exp_date, index)
 %MASKTOSPOTS generate the statistic of spots in a mask
 %   2018-01-17
+%   spots: the intensity of spots
+%   rfp: total spots intensity per cell
+%   gfp: fluorescence for background
+%   background: background for spot channel (substracted)
+%   intensity: total fluorescence of spot channel for each cell
+%   mintensity: mintensity for each cell
 
 %read the fluorescence file 
 imgr = imread([filename(1:length(filename)-6) num2str(2,'%02d') '.tif']);
 s = size(imgr);
+
+% import gfp channel
+imgr2 = imread([filename]);
 
 %% calculate drif of images
 mask2 = mask{index};
@@ -26,14 +35,14 @@ background = zeros(max2(mask{index}),1);
 for i = 1:max2(mask{index})
     maski = delout(find(mask{index}==i)+drift, s(1)*s(2));
     background(i) = prctile(imgr(maski),60);
+    background_g(i) = double(prctile(imgr2(maski-drift),60));
     intensity(i) = sum(sum(imgr(maski)));
     mintensity(i) = sum(sum(imgr(maski)))/sum(sum(mask{index}==i));
-    imgr(maski) = imgr(maski)-background(i);
+    imgr(maski) = minus(imgr(maski),uint16(background(i)*double(imgr2(maski-drift))/background_g(i)));
 end
 
 %% calculate statistics
-% import gfp channel
-imgr2 = imread([filename]);
+
 % get gfp statistics
 for i = 1:max2(mask{index})
     gfp(i) = prctile(imgr2(find(mask{index}==i)),50);
