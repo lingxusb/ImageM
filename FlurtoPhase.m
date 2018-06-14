@@ -2,27 +2,32 @@
 %   2018-01-11
 
 %% specify all the paths and initialize schnitzcells
-exp_date = '2018-04-22'
+exp_date = '2018-06-08'
 schn_path = 'D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\';
 p = initschnitz('TestSchnitz-01',exp_date,'e.coli',...
 'rootDir',schn_path);
-source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180425\A4+877 r 2000ms g 200ms\';
+source_dir = 'D:\Dropbox (MIT)\Postdoc\microscope\nikon 20180608 copy number 100X\877 g 200ms r 2s\';
 save_dir = [schn_path exp_date '\TestSchnitz-01\images\'];
 
-filename{1} = 'Multichannel-0103.tif';
+filename{1} = 'Multichannel-0003.tif';
 filename{2} = 'Multichannel-0203.tif';
 filename{3} = 'Multichannel-0403.tif';
-filename{4} = 'Multichannel-0503.tif';
-filename{5} = 'Multichannel-0603.tif';
-filename{6} = 'Multichannel-0603.tif';
+filename{4} = 'Multichannel-0403.tif';
+filename{5} = 'Multichannel-0403.tif';
+filename{6} = 'Multichannel-0403.tif';
+
+crop = 1;
+
+if crop == 1
+    crop_image = imread('D:\Dropbox (MIT)\Postdoc\programs\Image Process\GitRep\crop_0604.tif');
+end
+
 
 %% process all the images for cell segmentation
 
-
 for i = 1:6
     imgr = imread([source_dir filename{i}]);
-    %2100 is a good threshold
-    %p2(p2>2100)  = 2100;
+
     
     %get the region for cells
     mthres = [1100,100];
@@ -42,17 +47,48 @@ for i = 1:6
     %[centersBright, radiiBright] = imfindcircles(pm,[1 4],'ObjectPolarity','bright','Sensitivity',1,'Method','TwoStage');
     %viscircles(centersBright, radiiBright,'Color','b');
     
+%   remove over expression ONLY for some of the images
+%     filen = filename{i};
+%     imgr2 = imread([source_dir [filen(1:length(filen)-6) num2str(1,'%02d') '.tif']]);
+%     m_br = double(imgr2==16383);
+%     CC=bwconncomp(m_br);
+%     stats=regionprops(CC,'basic');
+%     for j = 1:1:CC.NumObjects
+%         larea(j) = stats(j).Area;
+%         if larea(j)>150
+%             imgr(CC.PixelIdxList{j}) = 740;
+%         end
+%     end
+
+    %crop image only for some of the images
+    if crop == 1
+        imgr(find(crop_image<max(max(crop_image)))) = 600;
+    end
+    
+%   Fluore mask only
     % prefix -01-t- indicates that we used these files for segmentation
     % based on fluorescence images
     write_name = [schn_path...
-         exp_date '\TestSchnitz-01\images\TestSchnitz-01-t-' num2str(i,'%03d') '.tif'];
+      exp_date '\TestSchnitz-01\images\TestSchnitz-01-t-' num2str(i,'%03d') '.tif'];
     imwrite(imgr,write_name);
+
+%   PHASE constrast mask only
+    % based on phase images
+%         write_name = [schn_path...
+%          exp_date '\TestSchnitz-01\images\TestSchnitz-01-p-' num2str(i,'%03d') '.tif'];
+%     imwrite(imgr,write_name);
+
     %write_name = ['D:\Dropbox (MIT)\Postdoc\programs\Schnitzcells\samples\'...
     %     exp_date '\TestSchnitz-01\images\TestSchnitz-01-spots-t-' num2str(i,'%03d') '.tif'];
     %imwrite(uint16(spots),write_name);
 end
 
+%   Fluore mask only
 p = segmoviefluor(p,'maxThresh',0.1);
+
+%   PHASE constrast mask only
+%p = segmoviephase(p,'maxThresh',0.1,'minThresh',0.1);
+
 p = manualcheckseg(p);
 
 %load masks

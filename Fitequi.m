@@ -9,9 +9,9 @@ function [ fpara, prob ] = Fitequi( sinten,snum )
 %% cost function for two different distributions
 function r = cost(fpara, sinten, snum)
     %get matrix of activation
-    for j = 1:floor(max(sinten)/fpara(1))
+    for j = ceil(min(sinten)/fpara(1)):floor(max(sinten)/fpara(1))
         sample = normrnd(fpara(1)*j,fpara(2),1,10000);
-        m(j,:) = hist(sample,sinten);
+        m(j-ceil(min(sinten)/fpara(1))+1,:) = hist(sample,sinten);
     end
     sample_num =  abs(mldivide(m',snum'));
     y = SampleDis(sinten, fpara,floor(sample_num*100000/sum(sample_num)));
@@ -23,12 +23,12 @@ optims=optimset('fminsearch');
 optims.MaxIter = 1000;
 optims.MaxFunEvals = 1000;
 fval_prev = 1000;
-[fpara,prob] = fminsearch(@(fpara) cost(fpara, sinten, snum),[5000 1000])
+[fpara,prob] = fminsearch(@(fpara) cost(fpara, sinten, snum),[2500 10])
 
 %% plot fitting results
-for j = 1:floor(max(sinten)/fpara(1))
+for j = ceil(min(sinten)/fpara(1)):floor(max(sinten)/fpara(1))
    sample = normrnd(fpara(1)*j,fpara(2),1,10000);
-   m(j,:) = hist(sample,sinten);
+   m(j-ceil(min(sinten)/fpara(1))+1,:) = hist(sample,sinten);
 end
 sn =  abs(mldivide(m',snum'));
 y_pre = SampleDis(sinten, fpara,floor(sn*100000/sum(sn)));
@@ -41,10 +41,10 @@ end
 %   sinten: x-axis
 %   fpara: parameter that constrain the distribution
 function y_pre = SampleDis(sinten, fpara, sample_num)
-    peak_num = floor(max(sinten)/fpara(1));
+    peak_num = floor((max(sinten))/fpara(1));
     sample = [];
-    for j = 1:peak_num
-        sample = [sample, normrnd(fpara(1)*j,fpara(2),1,sample_num(j))];
+    for j = ceil(min(sinten)/fpara(1)):peak_num
+        sample = [sample, normrnd(fpara(1)*j,fpara(2),1,sample_num(j-ceil(min(sinten)/fpara(1))+1))];
     end
     y_pre = hist(sample,sinten)/sum(sample_num);
 end
